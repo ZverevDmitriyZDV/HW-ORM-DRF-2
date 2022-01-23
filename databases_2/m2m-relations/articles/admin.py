@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet
 
-from .models import Article, Scope, Tag
+from .models import Article, Scope, TopicTag
 
 
 class RelationshipInlineFormset(BaseInlineFormSet):
@@ -22,7 +22,7 @@ class RelationshipInlineFormset(BaseInlineFormSet):
             if form.cleaned_data.get('is_main'):
                 count += 1
         if count != 1:
-            raise ValidationError('Основны может быть только одно значение')
+            raise ValidationError('Основным может быть только одно значение')
         super().validate()  # вызываем базовый код переопределяемого метода
 
     def clean(self):
@@ -55,11 +55,17 @@ class ScopeInLine(admin.TabularInline):
     min_num = 1
 
 
-@admin.register(Article)
+class TagAdmin(admin.ModelAdmin):
+    pass
+
+
 class ArticleAdmin(admin.ModelAdmin):
-    inlines = [ScopeInLine, ]
+    inlines = [ScopeInLine]
+    pass
 
 
-@admin.register(Tag)
-class Tag(admin.ModelAdmin):
-    inlines = [ScopeInLine, ]
+admin.site.register(TopicTag, TagAdmin)
+admin.site.register(Article, ArticleAdmin)
+
+
+
